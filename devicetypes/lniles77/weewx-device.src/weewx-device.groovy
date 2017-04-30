@@ -58,6 +58,8 @@ def setServer(ip, port, url) {
   def existingPort = getDataValue("port")
   def existingUrl = getDataValue("jsonPath")
 
+  log.debug "setServer(${ip}, ${port}, ${url})"
+
   if ( existingIp && ip == existingIp
        && existingPort && port == existingPort
        && existingUrl && url == existingUrl ) {
@@ -153,7 +155,8 @@ def refresh() {
 // 
 
 private getWeewxData() {
-
+  log.debug "getWeewxData"
+  
   def ip = getDataValue("ip")
   def port = getDataValue("port")
   def jsonPath = getDataValue("jsonPath")
@@ -163,6 +166,8 @@ private getWeewxData() {
 		 path: jsonPath,
 		 HOST: "${ip}:${port}"
 	       ]
+
+  log.debug "HubAction params = ${params}."
 
   def hubAct = new physicalgraph.device.HubAction( params, device.deviceNetworkId)
   log.debug "getWeewxData: ${params}, dni ${device.deviceNetworkId}"
