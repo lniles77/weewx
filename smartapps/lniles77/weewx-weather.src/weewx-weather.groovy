@@ -45,17 +45,28 @@ def updated() {
 
 def initialize() {
   // The network ID gets set in setServer()
-  def theDevice = addChildDevice("lniles77", "Weewx Device", "0000", location.hubs[0].id)
+  def theDevice = addChildDevice("lniles77", "Weewx Device", calculateNetworkId(weewxIp, weewxPort), location.hubs[0].id, [stuff: "junk", aport: weewxPort])
 
-  def err = theDevice.setServer(weewxIp, weewxPort, weewxURL)
-  if ( err ) {
-    log.error err
-    deleteChildDevice(theDevice.deviceNetworkId)
-  }
+  log.debug "device created"
+  theDevice.setServer(weewxIp, weewxPort, weewxURL)
+
+  log.debug "initialize: server set"
 }
 
 def unsubscribe() {
+  log.debug "unsubscribe:"
   getChildDevices()?.each {
+    log.debug "   unsub DNI ${it.deviceNetworkId}"
     deleteChildDevice(it.deviceNetworkId)
   }
+}
+
+
+private calculateNetworkId(ip, port) {
+  String ah = ip.tokenize('.').collect { String.format('%02x', it.toInteger()) }.join()
+  String ph = port.toString().format('%04x', port.toInteger())
+  String dni = "$ah:$ph".toUpperCase()
+  
+  log.debug "returning deviceNetworkId ${dni}"
+  return dni
 }

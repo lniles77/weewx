@@ -28,6 +28,7 @@ metadata {
   }
 
   tiles {
+    log.debug "defining tiles"
     valueTile("observationTime", "device.obsTime", width:2, height:1) {
       state "default", label:'${currentValue}'
     }
@@ -48,8 +49,11 @@ metadata {
       state "default", action:"refresh.refresh", icon: "st.secondary.refresh"
     }
 
+    log.debug "tiles defined"
     main "temperature"
+    log.debug "main set"
     details(["observationTime", "temperature", "windVec", "gustVec", "refresh"])
+    log.debug "details set"
   }
 }
 
@@ -66,29 +70,29 @@ def setServer(ip, port, url) {
     log.debug "no change to server"
   } else {
   
-    try {
-      log.debug "Trying http://${ip}:${port}${url}"
-      httpGet("http://${ip}:${port}${url}") { resp ->
-	stat = resp.getStatus()
-	if ( stat != 200 ) {
-	  log.debug "Failed: status ${stat}"
-	  return "status ${stat}"
-	}
-	log.debug "response data: ${resp.data}"
-      }
-    } catch (e) {
-      log.error "Exception in setServer", e
-      return "exception $e"
-    }
+    // try {
+    //   log.debug "Trying http://${ip}:${port}${url}"
+    //   httpGet("http://${ip}:${port}${url}") { resp ->
+    // 	stat = resp.getStatus()
+    // 	if ( stat != 200 ) {
+    // 	  log.debug "Failed: status ${stat}"
+    // 	  return "status ${stat}"
+    // 	}
+    // 	log.debug "response data: ${resp.data}"
+    //   }
+    // } catch (e) {
+    //   log.error "Exception in setServer", e
+    //   return "exception $e"
+    // }
 
-    updateDataValue("port", port)
+    updateDataValue("port", port.toString())
     updateDataValue("ip", ip)
     updateDataValue("jsonPath", url)
   }
 
-  setNetworkId(ip, port)
+  //  setNetworkId(ip, port)
 
-  return ""
+  log.debug "setServer done"
 }
 
 // Parse the response
@@ -180,7 +184,7 @@ private setNetworkId(ip, port) {
   log.debug "setting Device Network ID"
 
   String ah = ip.tokenize('.').collect { String.format('%02x', it.toInteger()) }.join()
-  String ph = port.toString().format('%04x', portnum.toInteger())
+  String ph = port.toString().format('%04x', port.toInteger())
 
   device.deviceNetworkId = "$ah:$ph".toUpperCase()
 
