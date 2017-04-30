@@ -10,7 +10,7 @@ No beer, free or otherwise, was harmed in the development of this software.
 
 */
 
-definition(name: "Weewx Service Manager",
+definition(name: "Weewx Weather",
 	   namespace: "lniles77",
 	   author: "Les Niles",
 	   description: "This is a Service Manager SmartApp to support importing weather data from a weewx server",
