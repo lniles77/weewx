@@ -21,6 +21,8 @@ definition(name: "Weewx Weather",
 
 
 preferences {
+  section("Weewx instance name") {
+    input "weewxName", "string", title: "Weewx instance name (label for device handler)", defaultValue: "Weewx", required: true
   section("Weewx server IP address") {
     input "weewxIp", "string", title: "Weewx IP address", defaultValue: "xxx.xxx.xxx.xxx", required: true
   }
@@ -40,12 +42,13 @@ def installed() {
 def updated() {
   log.debug "Updated with settings: ${settings}"
   unsubscribe()
+  uninitialize()
   initialize()
 }
 
 def initialize() {
   // The network ID gets set in setServer()
-  def theDevice = addChildDevice("lniles77", "Weewx Device", calculateNetworkId(weewxIp, weewxPort), location.hubs[0].id, [stuff: "junk", aport: weewxPort])
+  def theDevice = addChildDevice("lniles77", "Weewx Device", calculateNetworkId(weewxIp, weewxPort), location.hubs[0].id, [label: weewxName])
 
   log.debug "device created"
   theDevice.setServer(weewxIp, weewxPort, weewxURL)
@@ -53,10 +56,10 @@ def initialize() {
   log.debug "initialize: server set"
 }
 
-def unsubscribe() {
-  log.debug "unsubscribe:"
+def uninitialize() {
+  log.debug "uninitialize:"
   getChildDevices()?.each {
-    log.debug "   unsub DNI ${it.deviceNetworkId}"
+    log.debug "   remove DNI ${it.deviceNetworkId}"
     deleteChildDevice(it.deviceNetworkId)
   }
 }
