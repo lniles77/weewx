@@ -45,7 +45,7 @@ def updated() {
 
 def initialize() {
   // The network ID gets set in setServer()
-  def theDevice = addChildDevice("lniles77", "Weewx", "0000", location.hubs[0].id)
+  def theDevice = addChildDevice("lniles77", "Weewx Device", "0000", location.hubs[0].id)
 
   def err = theDevice.setServer(weewxIp, weewxPort, weewxURL)
   if ( err ) {
