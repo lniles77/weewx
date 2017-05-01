@@ -32,8 +32,8 @@ metadata {
       state "default", label:'${currentValue}'
     }
 
-    valueTile("temperature", "device.temperature", width:1, height:1) {
-      state "temperature", label:'${currentValue}°F', unit: "°F"
+    valueTile("temperature", "device.temperatureString", width:1, height:1) {
+      state "temperature", label:'${currentValue}', unit: "°F"
     }
 
     valueTile("windVec", "device.windVec", inactiveLabel:false) {
@@ -86,8 +86,6 @@ def setServer(ip, port, url) {
     updateDataValue("jsonPath", url)
   }
 
-  //  setNetworkId(ip, port)
-
   log.debug "setServer done, DNI=${device.deviceNetworkId}"
 }
 
@@ -106,36 +104,53 @@ def parse(description) {
       sendEvent(name: "obsTime", value: data.time)
     }
 
-    if ( data.containsKey("outTemp") && data.outTemp ) {
+    if ( data.containsKey("outTemp") && data.outTemp != Null ) {
       log.debug "temperature ${data.outTemp}"
       sendEvent(name: "temperature", value: data.outTemp as float)
-    }
-
-    if ( data.containsKey("windSpeed") && data.windSpeed ) {
-      log.debug "wind ${data.windSpeed}"
-      sendEvent(name: "wind", value: data.windSpeed as float)
-      if ( data.containsKey("windDir") && data.windDir ) {
-	log.debug "windVec"
-	sendEvent(name: "windVec", value: "${data.windSpeed}mph from ${data.windDir}°")
+      if ( data.containsKey("outTempUnits") && data.outTempUnits != Null ) {
+	sendEvent(name: "temperatureUnits", value: data.outTempUnits)
+	sendEvent(name: "temperatureString", value: "${data.outTemp}${data.outTempUnits}")
       }
     }
 
-    if ( data.containsKey("windDir") && data.windDir ) {
-      log.debug "windDir ${data.windDir}"
-      sendEvent(name: "windDir", value: data.windDir as float)
+    if ( data.containsKey("windSpeed") && data.windSpeed != Null ) {
+      log.debug "wind ${data.windSpeed}"
+      sendEvent(name: "wind", value: data.windSpeed as float)
+
+      if ( data.containsKey("windSpeedUnits") && data.windSpeedUnits != Null ) {
+	sendEvent(name: "windSpeedUnits", value: data.windSpeedUnits)
+
+	if ( data.containsKey("windDir") && data.windDir != Null ) {
+	  log.debug "windDir ${data.windDir}"
+	  sendEvent(name: "windDir", value: data.windDir as float)
+
+	  def windv = "calm"
+	  if ( data.windSpeed > 0.01 ) {
+	    windv = "${data.windSpeed}${data.windSpeedUnits} from ${data.windDir}°"
+	  }
+	  sendEvent(name: "windVec", value: windv)
+	  log.debug "windVec ${windv}"
+	}
+      }
     }
 
-    if ( data.containsKey("windGust") && data.windGust ) {
+
+    if ( data.containsKey("windGust") && data.windGust != Null ) {
       log.debug "gust ${data.windGust}"
       sendEvent(name: "gust", value: data.windGust as float)
-    }
 
-    if ( data.containsKey("windGustDir") && data.windGustDir ) {
-      log.debug "gustDir ${data.windGustDir}"
-      sendEvent(name: "gustDir", value: data.windGustDir as float)
-      if ( data.containsKey("windGust") && data.windGust ) {
-	log.debug "gustVec"
-	sendEvent(name: "gustVec", value: "${data.windGust}mph from ${data.windGustDir}°")
+      if ( data.containsKey("windSpeedUnits") && data.windSpeedUnits != Null ) {
+	if ( data.containsKey("windGustDir") && data.windGustDir != Null ) {
+	  log.debug "gustDir ${data.windGustDir}"
+	  sendEvent(name: "gustDir", value: data.windGustDir as float)
+
+	  def gustv = "-"
+	  if ( data.windGust > 0.01 ) {
+	    gustv = "${data.windGust}${data.windSpeedUnits} from ${data.windGustDir}°"
+	  }
+	  sendEvent(name: "gustVec", value: gustv)
+	  log.debug "gustVec ${gustv}"
+	}
       }
     }
 
@@ -176,15 +191,3 @@ private getWeewxData() {
 }
 
 
-private setNetworkId(ip, port) {
-  log.debug "setting Device Network ID"
-
-  String ah = ip.tokenize('.').collect { String.format('%02x', it.toInteger()) }.join()
-  String ph = port.toString().format('%04x', port.toInteger())
-
-  device.deviceNetworkId = "$ah:$ph".toUpperCase()
-
-  log.debug "Device Network ID is ${device.deviceNetworkId}"
-}
-
-    
