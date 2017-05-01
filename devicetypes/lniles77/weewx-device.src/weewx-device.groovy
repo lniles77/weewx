@@ -65,28 +65,13 @@ def setServer(ip, port, url) {
        && existingUrl && url == existingUrl ) {
     log.debug "no change to server"
   } else {
-  
-    // try {
-    //   log.debug "Trying http://${ip}:${port}${url}"
-    //   httpGet("http://${ip}:${port}${url}") { resp ->
-    // 	stat = resp.getStatus()
-    // 	if ( stat != 200 ) {
-    // 	  log.debug "Failed: status ${stat}"
-    // 	  return "status ${stat}"
-    // 	}
-    // 	log.debug "response data: ${resp.data}"
-    //   }
-    // } catch (e) {
-    //   log.error "Exception in setServer", e
-    //   return "exception $e"
-    // }
-
     updateDataValue("port", port.toString())
     updateDataValue("ip", ip)
     updateDataValue("jsonPath", url)
   }
 
   log.debug "setServer done, DNI=${device.deviceNetworkId}"
+  return ""
 }
 
 // Parse the response

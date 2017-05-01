@@ -1,0 +1,25 @@
+#encoding UTF-8
+{
+  "title":"Cielo del Oeste Weather",
+  "time":"$current.dateTime",
+  "uptime":"$station.uptime",
+  "serverUptime":"$station.os_uptime",
+  "weewxVersion":"$station.version",
+  "outTemp":$current.outTemp.formatted,
+  "outTempUnits":"$unit.label.outTemp",
+  "dewpoint":$current.dewpoint.formatted,
+  "humidity":$current.outHumidity.formatted,
+  "insideHumidity":$current.inHumidity.formatted,
+  "barometer":$current.barometer.formatted,
+  "barometerUnits":"$unit.label.barometer",
+  "barometerTrendData":$trend.barometer.formatted,
+  "windSpeed":$current.windSpeed.formatted,
+  "windSpeedUnits":"$unit.label.windSpeed",
+  "windDir":$current.windDir.formatted,
+  "windGust":$current.windGust.formatted,
+  "windGustDir":$current.windGustDir.formatted,
+  "rainRate":$current.rainRate.formatted,
+  "rainRateUnits":"$unit.label.rainRate",
+  "insideTemp":$current.inTemp.formatted,
+  "insideTempUnits":"$unit.label.inTemp"
+}
