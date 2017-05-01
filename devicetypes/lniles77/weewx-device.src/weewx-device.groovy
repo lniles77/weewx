@@ -28,7 +28,6 @@ metadata {
   }
 
   tiles {
-    log.debug "defining tiles"
     valueTile("observationTime", "device.obsTime", width:2, height:1) {
       state "default", label:'${currentValue}'
     }
@@ -49,11 +48,8 @@ metadata {
       state "default", action:"refresh.refresh", icon: "st.secondary.refresh"
     }
 
-    log.debug "tiles defined"
     main "temperature"
-    log.debug "main set"
     details(["observationTime", "temperature", "windVec", "gustVec", "refresh"])
-    log.debug "details set"
   }
 }
 
@@ -92,7 +88,7 @@ def setServer(ip, port, url) {
 
   //  setNetworkId(ip, port)
 
-  log.debug "setServer done"
+  log.debug "setServer done, DNI=${device.deviceNetworkId}"
 }
 
 // Parse the response
