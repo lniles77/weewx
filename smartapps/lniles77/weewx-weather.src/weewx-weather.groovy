@@ -1,4 +1,6 @@
 /*
+
+
 The SmartThings end of an integration to pull weather information from an instance of weewx (http://weewx.com/)
 
 Copyright 2017 Les Niles Les@2pi.org
