@@ -7,7 +7,7 @@ as long as this statement and license remain intact, no other license is claimed
 imposed on other users of the software.
 
 No beer, free or otherwise, was harmed in the development of this software.
-
+--------------------------------------------------------------------------
 */
 
 definition(name: "Weewx Weather",
