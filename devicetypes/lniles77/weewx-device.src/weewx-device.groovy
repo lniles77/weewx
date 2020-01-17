@@ -101,7 +101,7 @@ def setServer(ip, port, url) {
 }
 
 
-String[] attributeNames = ["time"]
+String[] attributeNames = []
   
 // Parse the response
 def parse(description) {
