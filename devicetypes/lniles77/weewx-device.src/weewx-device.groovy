@@ -10,6 +10,7 @@ No beer, free or otherwise, was harmed in the development of this software.
 
 */
 
+  
 metadata {
   definition(name:"Weewx Device", namespace:"lniles77", author: "Les Niles") {
     capability "Temperature Measurement"
@@ -17,7 +18,15 @@ metadata {
     capability "Refresh"
     capability "Polling"
 
-    attribute "obsTime", "string"
+    attribute "observationTime", "string"
+    attribute "insideTemperature", "number"
+    attribute "windchill", "number"
+    attribute "heatindex", "number"
+    attribute "dewpoint", "number"
+    attribute "humidity", "number"
+    attribute "insideHumidity", "number"
+    attribute "barometer", "number"
+    attribute "barometerTrendData", "number"
     attribute "wind", "number"
     attribute "windDir", "number"
     attribute "windVec", "string"
@@ -53,6 +62,23 @@ metadata {
   }
 }
 
+/* Each entry in dataFields is an array 
+ */
+def dataFields = [ time: [ hasUnits: false, eventName: "observationTime", makeString: false ],
+		   outTemp: [ hasUnits: true, eventName: "temperature", makeString: true ],
+		   inTemp: [ hasUnits: true, eventName: "insideTemperature", makeString: true ],
+		   windchill: [ hasUnits: true, eventName: "windchill", makeString: true ],
+		   heatindex: [ hasUnits: true, eventName: "heatindex", makeString: true ],
+		   dewpoint: [ hasUnits: true, eventName: "dewpoint", makeString: true ],
+		   humidity: [ hasUnits: false, eventName: "humidity", makeString: true ],
+		   insideHumidity: [ hasUnits: false, eventName: "insideHumidity", makeString: true ],
+		   barometer: [ hasUnits: true, eventName: "barometer", makeString: true ],
+		   barometerTrendData: [ hasUnits: false, eventName: "barometerTrendData", makeString: true ]
+		 ]
+
+def setDisplayed(flags) {
+}
+
 def setServer(ip, port, url) {
   def existingIp = getDataValue("ip")
   def existingPort = getDataValue("port")
@@ -74,6 +100,9 @@ def setServer(ip, port, url) {
   return ""
 }
 
+
+String[] attributeNames = ["time"]
+  
 // Parse the response
 def parse(description) {
   log.debug "parsing weewx data ${description}"
@@ -81,9 +110,41 @@ def parse(description) {
   def msg = parseLanMessage(description)
 
   def data = msg.json
-  log.debug "parsed fields ${data} from ${msg}"
-  
+
+  log.debug "dataFields are ${dataFields}"
+  if ( attributeNames.size == 0 ) {
+    getSupportedAttributes().each {
+      attributeNames.add(it.getName())
+    }
+  }
+  log.debug "Attributes are ${attributeNames}"
   if ( data ) {
+
+    dataFields.keySet()?.each {
+
+      if ( data.containsKey(it) && data[it] != null ) {
+	def ev = dataFields[it]["eventName"]
+	def val = data[it]
+	def unName = "${it}Units".trim()
+
+	log.debug "${it} ${ev} = ${val}"
+	sendEvent(name: ev, value: val)
+
+	if ( data.containsKey(unName) && data[unName] != null ) {
+	  def units = data[unName]
+	  log.debug "units for ${ev} = ${units}"
+	  if ( attributeNames.contains(ev) ) {
+	    sendEvent(name: "${ev}Units", value: units)
+	    log.debug "event ${ev}Units = ${units}"
+	  }
+	  if ( dataFields[it]["makeString"] && attributeNames.contains("${ev}String") ) {
+	    sendEvent(name: "${ev}String", value: "${val}${units}")
+	    log.debug "event ${ev}String = ${val}${units}"
+	  }
+	}
+      }
+    }
+      
     if ( data.containsKey("time") && data.time ) {
       log.debug "Observation Time ${data.time}"
       sendEvent(name: "obsTime", value: data.time)

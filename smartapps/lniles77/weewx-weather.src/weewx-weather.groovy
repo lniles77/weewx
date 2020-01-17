@@ -21,20 +21,45 @@ definition(name: "Weewx Weather",
 
 
 preferences {
-  section("Weewx instance name") {
-    input "weewxName", "string", title: "Weewx instance name (label for device handler)", defaultValue: "Weewx", required: true
+  page(name: "mainPage", nextPage: null, install: true, uninstall: true) {
+    section("Device Handler") {
+      input "weewxName", "string", title: "Weewx instance name (label for device handler)", defaultValue: "Weewx"
+      href "selectData", title:"Select data to display", description:""
+    }
+
+    section("Weewx Server") {
+      input "weewxIp", "string", title: "Weewx IP address", defaultValue: "xxx.xxx.xxx.xxx"
+      input "weewxPort", "number", title: "Weewx port #", defaultValue: 80
+      input "weewxURL", "string", title: "JSON file URL (on weewx server)", defaultValue: "/current.json"
+    }
   }
-  section("Weewx server IP address") {
-    input "weewxIp", "string", title: "Weewx IP address", defaultValue: "xxx.xxx.xxx.xxx", required: true
-  }
-  section("Weewx server port") {
-    input "weewxPort", "number", title: "Weewx port #", defaultValue: 80, required: true
-  }
-  section("URL to current-conditions JSON file") {
-    input "weewxURL", "string", title: "JSON file URL (on weewx server)", defaultValue: "/current.json", required: true
+
+  page(name:"selectData", title: "Select data to display")
+}
+
+def selectData() {
+  dynamicPage(name: "selectData") {
+    section {
+      input(name: "outTempShow", type: "bool", title: "Outside Temperature", defaultValue: true)
+      input(name: "inTempShow", type: "bool", title: "Inside Temperature", defaultValue: false)
+      input(name: "barometerShow", type: "bool", title: "Barometer", defaultValue: false)
+      input(name: "barometerTrendDataShow", type: "bool", title: "Barometer Trend", defaultValue: false)
+      input(name: "windShow", type: "bool", title: "Wind", defaultValue: true)
+      input(name: "windGustShow", type: "bool", title: "Wind Gust", defaultValue: true)
+      input(name: "rainRateShow", type: "bool", title: "Rain Rate", defaultValue: false)
+      input(name: "dayRainShow", type: "bool", title: "Day Rain", defaultValue: true)
+      input(name: "windchillShow", type: "bool", title: "Windchill", defaultValue: false)
+      input(name: "heatindexShow", type: "bool", title: "Heatindex", defaultValue: false)
+      input(name: "dewpointShow", type: "bool", title: "Dewpoint", defaultValue: false)
+      input(name: "humidityShow", type: "bool", title: "Humidity", defaultValue: false)
+      input(name: "insideHumidityShow", type: "bool", title: "Inside Humidity", defaultValue: false)
+      input(name: "uptimeShow", type: "bool", title: "Weewx Uptime", defaultValue: false)
+      input(name: "serverUptimeShow", type: "bool", title: "Server Uptime", defaultValue: false)
+    }
   }
 }
 
+    
 def installed() {
   log.debug "Installed with settings: ${settings}"
   initialize()
@@ -52,6 +77,7 @@ def initialize() {
 
   log.debug "device created"
   theDevice.setServer(weewxIp, weewxPort, weewxURL)
+  theDevice.setDisplayed(settings)
 
   log.debug "initialize: server set"
 }

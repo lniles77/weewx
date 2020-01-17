@@ -7,7 +7,12 @@
   "weewxVersion":"$station.version",
   "outTemp":$current.outTemp.formatted,
   "outTempUnits":"$unit.label.outTemp",
+  "inTemp":$current.inTemp.formatted,
+  "inTempUnits":"$unit.label.inTemp",
+  "windchill":$current.windchill,
+  "heatindex":$current.heatindex,
   "dewpoint":$current.dewpoint.formatted,
+  "dewpointUnits":"$unit.label.outTemp",
   "humidity":$current.outHumidity.formatted,
   "insideHumidity":$current.inHumidity.formatted,
   "barometer":$current.barometer.formatted,
@@ -20,6 +25,6 @@
   "windGustDir":$current.windGustDir.formatted,
   "rainRate":$current.rainRate.formatted,
   "rainRateUnits":"$unit.label.rainRate",
-  "insideTemp":$current.inTemp.formatted,
-  "insideTempUnits":"$unit.label.inTemp"
+  "dayRain":$day.rain.sum,
+  "dayRainUnits":$unit.label.rain
 }
